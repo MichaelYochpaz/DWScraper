@@ -217,7 +217,7 @@ def show_help():
     name = os.path.basename(__file__)
     print(f"Usage: {name} (last | all | issue <issue-number> | range [start] <end>) [-m <issue | articles | both>] [-o PATH] [-h] [-v]\n",
     "last                   Download the most recent issue.",
-    "issue <number>         Download a specific issue.",
+    "issue <issue-number>   Download a specific issue.",
     "all                    Download all available issues.",
     "range [start] <end>    Download all issues between a range of numbers.",
     "                       If a single arguments is given, the range will start with 1.",

@@ -6,7 +6,7 @@ A Python web-scraper for downloading [DigitalWhisper](https://www.digitalwhisper
 Usage: DWScraper (last | all | issue <issue-number> | range [start] <end>) [-m <issue | articles | both>] [-o PATH] [-h] [-v]
 
 last                   Download the most recent issue.
-issue <issue-number>   Download a specific issue number.
+issue <issue-number>   Download a specific issue.
 all                    Download all available issues.
 range [start] <end>    Download all issues between a range of numbers.
                        If a single arguments is given, the range will start with 1.
