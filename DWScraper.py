@@ -209,7 +209,7 @@ def format_article_name(name: str):
 
 def show_usage():
     print(f"Usage: {os.path.basename(__file__)} (last | all | issue <issue-number> | range [start] <end>) [-m <issue | articles | both>] [-o PATH] [-h] [-v]",
-    'For more info use "-h" or "--help"')
+    'For more info use "-h" or "--help"', sep="\n")
     exit(2)
 
 
