@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 # GitHub: https://github.com/MichaelYochpaz/DWScraper
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 SITE_URL = "https://www.digitalwhisper.co.il"
 FORMAT = ".pdf"
 
@@ -143,7 +143,8 @@ def issue_url_to_number(url: str):
     return int(url.replace(SITE_URL + "/issue",''))
 
 
-def download_issue(url: str, mode: Mode, download_location: str):   
+def download_issue(url: str, mode: Mode, download_location: str):  
+    successfull = True 
     web_page = BeautifulSoup(requests.get(url).text, "lxml")
     content_div = web_page.find("div", id="content")
 
@@ -161,13 +162,18 @@ def download_issue(url: str, mode: Mode, download_location: str):
         for article in content_div.find("tbody").find_all('a'):
             download_url = relative_path_to_absolute(article.attrs['href'])
             file_name = format_article_name(article.text)
-            download_file(download_url, format_article_name(article.text) + FORMAT, download_location)
+
+            if not download_file(download_url, format_article_name(article.text) + FORMAT, download_location):
+                successfull = False
 
     if mode == Mode.issue or mode == Mode.both:
         download_url = relative_path_to_absolute(content_div.find_all('a', text="כאן")[0].attrs["href"])
-        download_file(download_url, issue_name + FORMAT, download_location)
-    
-    print(f"Issue {issue_number} downloaded successfully.")
+
+        if not download_file(download_url, issue_name + FORMAT, download_location):
+            return False
+
+    if successfull:
+        print(f"Issue {issue_number} downloaded successfully.")
 
 
 def download_issues(urls: list, mode: Mode, download_location: str):
@@ -175,18 +181,35 @@ def download_issues(urls: list, mode: Mode, download_location: str):
         download_issue(url, mode, download_location)
 
 
+# Downloads a file and returns True if successfull, False if not.
 def download_file(url: str, file_name: str, path: str):
-    with open(path + "/" + file_name, 'wb') as file:
-        file.write(requests.get(url, allow_redirects=True, verify=False).content)
+    file_path = path + "/" + file_name
+
+    try:
+        with open(file_path, 'wb') as file:
+            try:
+                file.write(requests.get(url, allow_redirects=True, verify=False).content)
+            
+            except Exception as e:
+                print(f'Could not download "{file_name}.', "Error: " + str(e), sep="\n")
+                return False
+
+    except Exception as e:
+        print(e)
+        return False
+
+    return True
 
 
-# Change a relative path (example: "../../file.pdf") to an absolute path
+# If the path is relative (example: "../../file.pdf"), change it to an absolute path
 def relative_path_to_absolute(url: str):
-    if SITE_URL in url:
-        return url
-
-    elif "../.." in url:
+    if "../.." in url:
         return SITE_URL + url.replace("../..", "")
+
+    elif url.startswith("files/"):
+        return SITE_URL + "/" + url
+
+    return url
 
 
 # Format a fixed & valid file name for an issue
@@ -198,13 +221,16 @@ def format_issue_name(issue_number: int, date: str):
 
     if fixed_date[1][0] != "0" and int(fixed_date[1]) < 10:
         fixed_date[1] = "0" + fixed_date[1]
-             
+
+    if len(fixed_date[2]) == 2:
+        fixed_date[2] = "20" + fixed_date[2]
+
     return f"גליון {issue_number} - {'.'.join(fixed_date)}"
 
 
 # Format a valid file name for an article
 def format_article_name(name: str):
-    return name.replace(": ", " - ").replace(":", "-").replace("/", "-").replace("\\", "-").replace("?", "")
+    return name.replace(": ", " - ").replace(":", "-").replace("/", "-").replace("\\", "-").replace("?", "").replace('"', "").replace("\r", "").replace("\n", "")
 
 
 def show_usage():
