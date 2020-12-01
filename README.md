@@ -1,5 +1,6 @@
 # DWScraper
 A Python web-scraper for downloading [DigitalWhisper](https://www.digitalwhisper.co.il) issues.
+Latest version: 1.0.2 ([changelog](https://github.com/MichaelYochpaz/DWScraper/blob/main/changelog.md))
 
 ## Usage
 ```
@@ -15,8 +16,8 @@ Options:
 -h, --help             Print this help menu and exit.
 -v, --version          Print program version and exit.
 -m, --mode <mode>      Set download mode. Options are:
-                       "issue" to download full issues (default),
-                       "articles" to download articles of issues as separate files,
-                       "both" to download both full issues and separate article files.
+                       "issue" - download full issues (default),
+                       "articles" - download articles of issues as separate files,
+                       "both" - download both full issues and separate article files.
 -o, --output           Set output folder to download files to (default: current working directory).
 ```

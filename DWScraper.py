@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 # GitHub: https://github.com/MichaelYochpaz/DWScraper
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 SITE_URL = "https://www.digitalwhisper.co.il"
 FORMAT = ".pdf"
 
@@ -109,7 +109,7 @@ def parse_optional_arguments(arguments: list):
         if (arg == "-o" or arg == "--output"):
             if i < (len(arguments)-1):
                 if os.path.exists(arguments[i+1]):
-                    if arguments[i+1].endswith('/'):
+                    if arguments[i+1].endswith('/') or arguments[i+1].endswith('\\'):
                         output = arguments[i+1][:-1]
                     else:
                         output = arguments[i+1]
@@ -130,12 +130,12 @@ def find_last_issue_url():
     return web_page.find_all('a', string=LOOKUP_STRING)[0].attrs['href']
 
 
-# Given an issue URL, returns the issue's number
+# Given an issue number, generate issue's URL
 def issue_number_to_url(issue_number: int):
     return SITE_URL + "/issue" + str(issue_number)
 
 
-# Given an issue number, generate issue's URL
+# Given an issue URL, returns the issue's number
 def issue_url_to_number(url: str):
     if url.endswith('/'):
         url = url[:-1]
@@ -161,14 +161,17 @@ def download_issue(url: str, mode: Mode, download_location: str):
 
         for article in content_div.find("tbody").find_all('a'):
             download_url = relative_path_to_absolute(article.attrs['href'])
-            file_name = format_article_name(article.text)
 
             if not download_file(download_url, format_article_name(article.text) + FORMAT, download_location):
                 successfull = False
 
     if mode == Mode.issue or mode == Mode.both:
-        download_url = relative_path_to_absolute(content_div.find_all('a', text="כאן")[0].attrs["href"])
+        download_url = f"https://www.digitalwhisper.co.il/files/Zines/{hex(issue_number)}/DigitalWhisper{issue_number}.pdf"
 
+        if requests.get(download_url).status_code != 200:
+            # Fallback - If previous method to generate download url doesn't work, find and use the download link on issue's page
+            download_url = relative_path_to_absolute(content_div.find_all('a', text="כאן")[0].attrs["href"])
+        
         if not download_file(download_url, issue_name + FORMAT, download_location):
             return False
 
@@ -251,9 +254,9 @@ def show_help():
     "-h, --help             Print this help menu and exit.",
     "-v, --version          Print program version and exit.",
     "-m, --mode <mode>      Set download mode. Options are:",
-    '                       "issue" to download full issues (default),',
-    '                       "articles" to download articles of issues as separate files,',
-    '                       "both" to download both full issues and separate article files.',
+    '                       "issue" - download full issues (default),',
+    '                       "articles" - download articles of issues as separate files,',
+    '                       "both" - download both full issues and separate article files.',
     "-o, --output           Set output folder to download files to (default: current working directory).\n",
     sep="\n")
     exit(0)
