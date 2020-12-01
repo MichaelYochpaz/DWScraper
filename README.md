@@ -1,5 +1,5 @@
 # DWScraper
-A Python web-scraper for downloading [DigitalWhisper](https://www.digitalwhisper.co.il) issues.
+A Python web-scraper for downloading [DigitalWhisper](https://www.digitalwhisper.co.il) issues.  
 Latest version: 1.0.2 ([changelog](https://github.com/MichaelYochpaz/DWScraper/blob/main/changelog.md))
 
 ## Usage
