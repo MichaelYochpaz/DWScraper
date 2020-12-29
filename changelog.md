@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to the script will be documented here.
 
-## 1.0.2 - [2020-11-19]
+## 1.0.2 - [2020-12-01]
 ### Added
 * Issue URLs will now be generated in a more efficient method, with previous method being used as fallback.
 
